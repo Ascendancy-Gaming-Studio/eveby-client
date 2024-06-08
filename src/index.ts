@@ -1,5 +1,4 @@
 import { GatewayIntentBits } from 'discord.js';
-import { config } from 'dotenv';
 import { Eveby } from './core/eveby';
 
 const bot = new Eveby({
@@ -10,13 +9,4 @@ const bot = new Eveby({
   ],
 });
 
-bot
-  .load()
-  .then((state: boolean) => bot.run(state))
-  .then((state: boolean) => {
-    config({
-      path: './environments/.env.development',
-    });
-
-    bot.login(state, process.env.DISCORD_ACCESS_TOKEN);
-  });
+bot.load().then((state: boolean) => bot.run(state));

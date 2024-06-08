@@ -6,10 +6,12 @@ import {
   ConfigState,
 } from '../features/config-manager';
 import { EventManager, EventManagerInterface } from '../features/event-manager';
+import { config } from 'dotenv';
 
 export interface EvebyInterface {
+  setState(state: ConfigState): void;
   load(): Promise<boolean>;
-  run(state: boolean): Promise<boolean>;
+  run(state: boolean): Promise<void>;
 }
 
 export class Eveby implements EvebyInterface {
@@ -32,19 +34,30 @@ export class Eveby implements EvebyInterface {
       config: this.config,
       client: this.client,
     });
+
+    // TODO: Implementar o disparo unico de eventos.
+    this.config.localStorage
+      .get('state')
+      ?.subscribe(() => console.log('state changed'));
+    this.config.localStorage.get('state')?.subscribe(async () => {
+      if (
+        this.config.localStorage.get('state')?.getValue() == ConfigState.Ready
+      ) {
+        config({
+          path: './environments/.env.development',
+        });
+
+        await this.login(process.env.DISCORD_ACCESS_TOKEN);
+      }
+    });
   }
 
-  public setState(state: ConfigState) {
+  public setState(state: ConfigState): void {
     this.config.localStorage.get('state')?.setValue(state);
   }
 
-  public async login(state: boolean, token?: string): Promise<boolean> {
-    if (!state) return false;
-
-    if (!(await this.client.login(token))) return false;
-    this.config.localStorage.get('state')?.setValue(ConfigState.Ready);
-
-    return true;
+  private async login(token?: string): Promise<void> {
+    this.client.login(token);
   }
 
   public async load(): Promise<boolean> {
@@ -55,17 +68,16 @@ export class Eveby implements EvebyInterface {
     return true;
   }
 
-  public async run(state: boolean): Promise<boolean> {
+  public async run(state: boolean): Promise<void> {
     if (!state) {
       this.setState(ConfigState.NotReady);
-
-      return false;
+      return;
     }
 
     this.setState(ConfigState.Running);
     await setInterval(() => {}, 1000);
     await this.eventManager.run();
 
-    return true;
+    this.setState(ConfigState.Ready);
   }
 }
