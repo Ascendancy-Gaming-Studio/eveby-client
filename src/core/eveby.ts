@@ -35,16 +35,6 @@ export class Eveby implements EvebyInterface {
       config: this.config,
       client: this.client,
     });
-
-    // Experimental.
-    this.config.localStorage
-      .get('state')
-      ?.subscribe(() =>
-        console.log(
-          'state changed...',
-          this.config.localStorage.get('state')?.getValue(),
-        ),
-      );
   }
 
   public setState(state: ConfigState) {
@@ -62,7 +52,7 @@ export class Eveby implements EvebyInterface {
 
   public async load(): Promise<boolean> {
     this.setState(ConfigState.Loading);
-    await setInterval(() => {}, 1000);
+    await setInterval(() => { }, 1000);
     await this.eventManager.load();
 
     return true;
@@ -76,7 +66,7 @@ export class Eveby implements EvebyInterface {
     }
 
     this.setState(ConfigState.Running);
-    await setInterval(() => {}, 1000);
+    await setInterval(() => { }, 1000);
     await this.eventManager.run();
 
     return true;

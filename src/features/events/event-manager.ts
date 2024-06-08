@@ -99,6 +99,7 @@ export class EventManager implements EventManagerInterface {
           ),
         );
         obj = new obj[this.convertFileNameToClassName(event.toString())]();
+        obj.setConfig(this.config);
         obj.setClient(this.client);
 
         this.client.on(event, (...args) => obj.run(this.client, ...args));

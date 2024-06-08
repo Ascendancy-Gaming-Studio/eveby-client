@@ -1,4 +1,5 @@
 import { Client } from 'discord.js';
+import { ConfigManager } from '../config/config-manager';
 
 export declare type EventOptions = {
   name: string;
@@ -10,6 +11,7 @@ export interface EventInterface {
 
 export class Event implements EventInterface {
   protected name: string;
+  protected config?: ConfigManager;
   protected client?: Client;
 
   public constructor(options: EventOptions) {
@@ -18,5 +20,9 @@ export class Event implements EventInterface {
 
   public setClient(client: Client) {
     this.client = client;
+  }
+
+  public setConfig(config: ConfigManager) {
+    this.config = config;
   }
 }

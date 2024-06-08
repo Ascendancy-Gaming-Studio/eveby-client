@@ -11,14 +11,13 @@ export class Ready extends Event implements ReadyInterface {
   }
 
   public async setActivity(): Promise<void> {
-    // TODO: Implementar a mudança de estado da atividade do bot.
     this.client?.user?.setActivity('!help', { type: ActivityType.Playing });
   }
 
   public async run(...args: any[]): Promise<void> {
     await this.setActivity();
 
-    // TODO: Implementar o acesso global do estado do bot.
+    if (!this.config?.localStorage.get('debug')?.getValue()) return;
     console.log('Eveby is ready!');
   }
 }
