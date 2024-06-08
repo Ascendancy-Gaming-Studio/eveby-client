@@ -4,11 +4,8 @@ import {
   ConfigManagerInterface,
   ConfigMode,
   ConfigState,
-} from '../features/config/config-manager';
-import {
-  EventManager,
-  EventManagerInterface,
-} from '../features/events/event-manager';
+} from '../features/config-manager';
+import { EventManager, EventManagerInterface } from '../features/event-manager';
 
 export interface EvebyInterface {
   load(): Promise<boolean>;
@@ -52,7 +49,7 @@ export class Eveby implements EvebyInterface {
 
   public async load(): Promise<boolean> {
     this.setState(ConfigState.Loading);
-    await setInterval(() => { }, 1000);
+    await setInterval(() => {}, 1000);
     await this.eventManager.load();
 
     return true;
@@ -66,7 +63,7 @@ export class Eveby implements EvebyInterface {
     }
 
     this.setState(ConfigState.Running);
-    await setInterval(() => { }, 1000);
+    await setInterval(() => {}, 1000);
     await this.eventManager.run();
 
     return true;

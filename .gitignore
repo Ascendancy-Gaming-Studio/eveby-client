@@ -1,5 +1,6 @@
 node_modules/*
 environments/*
+!environments/.env.template
 dist/*
 package-lock.json
 yarn.lock

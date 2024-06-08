@@ -2,7 +2,7 @@ import { Client, Collection } from 'discord.js';
 import { readdirSync } from 'fs';
 import { Observable, ObservableInterface } from '../observables';
 import { PathManager } from '../path-manager';
-import { ConfigManagerInterface } from '../config/config-manager';
+import { ConfigManagerInterface } from '../config-manager';
 
 export declare type EventOptions = {
   allowedEvents: string[];

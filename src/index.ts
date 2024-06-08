@@ -1,7 +1,6 @@
 import { GatewayIntentBits } from 'discord.js';
 import { config } from 'dotenv';
 import { Eveby } from './core/eveby';
-import { PathManager } from './features/path-manager';
 
 const bot = new Eveby({
   intents: [
@@ -19,5 +18,5 @@ bot
       path: './environments/.env.development',
     });
 
-    bot.login(state, process.env.ACCESS_TOKEN);
+    bot.login(state, process.env.DISCORD_ACCESS_TOKEN);
   });
