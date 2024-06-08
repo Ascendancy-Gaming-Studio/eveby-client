@@ -86,19 +86,18 @@ export class EventManager implements EventManagerInterface {
   }
 
   public async run(): Promise<void> {
-    var obj: any;
-
     this.localStorage
       .get('events')
       ?.getValue()
-      .forEach((event: any) => {
-        obj = require(
-          PathManager.getPath(
-            'events',
-            this.convertEventNameToFileName(event.toString() + '.js'),
-          ),
+      .forEach((event: string) => {
+        const eventPath = PathManager.getPath(
+          'events',
+          this.convertEventNameToFileName(event + '.js'),
         );
-        obj = new obj[this.convertFileNameToClassName(event.toString())]();
+        const eventName = this.convertFileNameToClassName(event);
+        var obj = require(eventPath);
+
+        obj = new obj[eventName]();
         obj.setConfig(this.config);
         obj.setClient(this.client);
 
