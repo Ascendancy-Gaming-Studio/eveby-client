@@ -1,17 +1,13 @@
 import { ActivityType } from 'discord.js';
 import { Event } from '../event-manager/event';
 
-export interface ReadyInterface {
-  setActivity(): Promise<void>;
-}
-
-export class Ready extends Event implements ReadyInterface {
+export class Ready extends Event {
   public constructor() {
     super({ name: 'ready' });
   }
 
-  public async setActivity(): Promise<void> {
-    this.client?.user?.setActivity('!help', { type: ActivityType.Playing });
+  private async setActivity(): Promise<void> {
+    this.client?.user?.setActivity(this.config?.localStorage.get('prefix')?.getValue() + 'help', { type: ActivityType.Playing });
   }
 
   public async run(...args: any[]): Promise<void> {
