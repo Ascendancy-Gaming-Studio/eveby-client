@@ -1,4 +1,5 @@
 import { Client, ClientOptions } from 'discord.js';
+import { config } from 'dotenv';
 import {
   ConfigManager,
   ConfigManagerInterface,
@@ -6,7 +7,7 @@ import {
   ConfigState,
 } from '../features/config-manager';
 import { EventManager, EventManagerInterface } from '../features/event-manager';
-import { config } from 'dotenv';
+import { ListenerMode } from '../features/observables';
 
 export interface EvebyInterface {
   setState(state: ConfigState): void;
@@ -35,11 +36,7 @@ export class Eveby implements EvebyInterface {
       client: this.client,
     });
 
-    // TODO: Implementar o disparo unico de eventos.
-    this.config.localStorage
-      .get('state')
-      ?.subscribe(() => console.log('state changed'));
-    this.config.localStorage.get('state')?.subscribe(async () => {
+    this.config.localStorage.get('state')?.addListener(async () => {
       if (
         this.config.localStorage.get('state')?.getValue() == ConfigState.Ready
       ) {
@@ -50,6 +47,16 @@ export class Eveby implements EvebyInterface {
         await this.login(process.env.DISCORD_ACCESS_TOKEN);
       }
     });
+
+    this.config.localStorage
+      .get('state')
+      ?.addListener((newValue: ConfigState, oldValue: ConfigState) => {
+        console.log(
+          'O estado foi modificado de %s para %s'
+            .replace('%s', oldValue.toString())
+            .replace('%s', newValue.toString()),
+        );
+      });
   }
 
   public setState(state: ConfigState): void {

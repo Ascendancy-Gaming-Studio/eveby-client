@@ -1,12 +1,14 @@
-export interface ObservableInterface {
-  value: any;
-  observers: CallableFunction[];
+export enum ListenerMode {
+  OneShot = 'one-shot',
+  Multiple = 'multiple',
+}
 
+export interface ObservableInterface {
   setValue(value: any): void;
   getValue(): any;
-  subscribe(observer: CallableFunction): void;
-  unsubscribe(observer: CallableFunction): void;
-  notify(model: CallableFunction): void;
+  addListener(observer: CallableFunction, oneShot?: ListenerMode): void;
+  removeListener(observer: CallableFunction): void;
+  notifyListeners(newValue?: any, oldValue?: any): void;
 }
 
 /**
@@ -18,34 +20,58 @@ export interface ObservableInterface {
  * @license MPL-2.0
  */
 export class Observable implements ObservableInterface {
-  public value: any;
-  public observers: CallableFunction[];
+  private newValue: any;
+  private oldValue: any;
+  private observers: CallableFunction[] = [];
+  private oneShot: number[] = [];
 
-  public constructor(value: any, observers: any[] = []) {
-    this.value = value;
-    this.observers = observers;
+  public constructor(value: any) {
+    this.setValue(value);
+  }
+
+  private setNewValue(value: any) {
+    if (this.newValue === value) return;
+    this.newValue = value;
+  }
+
+  private setOldValue(value: any) {
+    if (this.oldValue === value) return;
+    this.oldValue = value;
   }
 
   public setValue(value: any) {
-    this.value = value;
-    this.notify(this.value);
+    this.setOldValue(this.newValue);
+    this.setNewValue(value);
+    this.notifyListeners(this.newValue, this.oldValue);
   }
 
   public getValue() {
-    return this.value;
+    return this.newValue;
   }
 
-  public subscribe(observer: CallableFunction): void {
+  public addListener(
+    observer: any,
+    oneShot: ListenerMode = ListenerMode.Multiple,
+  ) {
     this.observers.push(observer);
+    if (oneShot === ListenerMode.OneShot)
+      this.oneShot.push(this.observers.length - 1);
   }
 
-  public unsubscribe(observer: CallableFunction): void {
+  public removeListener(observer: CallableFunction): void {
     this.observers = this.observers.filter(
       obs => obs instanceof observer !== true,
     );
   }
 
-  public notify(model: CallableFunction): void {
-    this.observers.forEach((obs: CallableFunction) => obs(model));
+  public notifyListeners(newValue?: any, oldValue?: any): void {
+    for (let i = this.observers.length - 1; i >= 0; i--) {
+      this.observers[i](newValue, oldValue);
+
+      if (this.oneShot.indexOf(i) !== -1) {
+        this.observers.splice(i, 1);
+        this.oneShot.splice(i, 1);
+      }
+    }
   }
 }
