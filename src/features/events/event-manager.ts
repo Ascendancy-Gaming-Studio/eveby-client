@@ -1,4 +1,4 @@
-import { Collection } from 'discord.js';
+import { Client, Collection } from 'discord.js';
 import { readdirSync } from 'fs';
 import { Observable, ObservableInterface } from '../observables';
 import { PathManager } from '../path-manager';
@@ -7,10 +7,10 @@ import { ConfigManagerInterface } from '../config/config-manager';
 export declare type EventOptions = {
   allowedEvents: string[];
   config: ConfigManagerInterface;
+  client: Client;
 };
 
 export interface EventManagerInterface {
-  // getEvents(): string[];
   load(): Promise<void>;
   run(): Promise<void>;
 }
@@ -26,12 +26,13 @@ export interface EventManagerInterface {
 export class EventManager implements EventManagerInterface {
   private localStorage: Collection<string, ObservableInterface>;
   private allowedEvents: string[] = [];
-  // private events: string[] = [];
   private config: ConfigManagerInterface;
+  private client: Client;
 
   public constructor(options: EventOptions) {
     this.localStorage = new Collection();
     this.config = options.config;
+    this.client = options.client;
 
     this.setAllowedEvents(options.allowedEvents);
   }
@@ -59,10 +60,6 @@ export class EventManager implements EventManagerInterface {
   public convertFileNameToClassName(fileName: string) {
     return fileName.charAt(0).toUpperCase().concat(fileName.slice(1));
   }
-
-  // public getEvents() {
-  //   return this.events;
-  // }
 
   public async load() {
     const files = readdirSync(PathManager.getPathForEvents(), {
@@ -102,7 +99,9 @@ export class EventManager implements EventManagerInterface {
           ),
         );
         obj = new obj[this.convertFileNameToClassName(event.toString())]();
-        // this.events.push(obj);
+        obj.setClient(this.client);
+
+        this.client.on(event, (...args) => obj.run(this.client, ...args));
 
         if (!this.config.localStorage.get('debug')?.getValue()) return;
         console.log(

@@ -11,6 +11,7 @@ export enum ConfigState {
   Ready = 'ready',
   NotReady = 'not-ready',
   Loading = 'loading',
+  Running = 'running',
   Error = 'error',
 }
 

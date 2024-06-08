@@ -1,11 +1,8 @@
-import { EventInterface } from '.';
+import { Event } from '.';
 
-export class MessageCreate implements EventInterface {
-  public name: string;
-
+export class MessageCreate extends Event {
   public constructor() {
-    this.name = 'messageCreate';
+    super({ name: 'messageCreate' });
   }
-
-  public async run(...args: any[]): Promise<void> {}
+  public async run(...args: any[]): Promise<void> { }
 }

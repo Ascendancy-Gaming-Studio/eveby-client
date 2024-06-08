@@ -10,10 +10,9 @@ import {
   EventManagerInterface,
 } from '../features/events/event-manager';
 
-
 export interface EvebyInterface {
-  load(): Promise<void>;
-  run(): Promise<void>;
+  load(): Promise<boolean>;
+  run(state: boolean): Promise<boolean>;
 }
 
 export class Eveby implements EvebyInterface {
@@ -34,14 +33,52 @@ export class Eveby implements EvebyInterface {
     this.eventManager = new EventManager({
       allowedEvents: ['ready', 'messageCreate'],
       config: this.config,
+      client: this.client,
     });
+
+    // Experimental.
+    this.config.localStorage
+      .get('state')
+      ?.subscribe(() =>
+        console.log(
+          'state changed...',
+          this.config.localStorage.get('state')?.getValue(),
+        ),
+      );
   }
 
-  public async load(): Promise<void> {
+  public setState(state: ConfigState) {
+    this.config.localStorage.get('state')?.setValue(state);
+  }
+
+  public async login(state: boolean, token?: string): Promise<boolean> {
+    if (!state) return false;
+
+    if (!(await this.client.login(token))) return false;
+    this.config.localStorage.get('state')?.setValue(ConfigState.Ready);
+
+    return true;
+  }
+
+  public async load(): Promise<boolean> {
+    this.setState(ConfigState.Loading);
+    await setInterval(() => {}, 1000);
     await this.eventManager.load();
+
+    return true;
   }
 
-  public async run(): Promise<void> {
+  public async run(state: boolean): Promise<boolean> {
+    if (!state) {
+      this.setState(ConfigState.NotReady);
+
+      return false;
+    }
+
+    this.setState(ConfigState.Running);
+    await setInterval(() => {}, 1000);
     await this.eventManager.run();
+
+    return true;
   }
 }
