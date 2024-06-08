@@ -1,5 +1,5 @@
 import { ActivityType } from 'discord.js';
-import { Event } from '.';
+import { Event } from '../event-manager/event';
 
 export interface ReadyInterface {
   setActivity(): Promise<void>;
