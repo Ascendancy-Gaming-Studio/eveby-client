@@ -1,0 +1,9 @@
+{
+    "verbose": true,
+    "restartable": "rs",
+    "watch": [
+        "dist/**/*",
+        "environments/.env.prod",
+        "environments/.env.dev"
+    ]
+}
