@@ -60,7 +60,7 @@ export class Observable implements ObservableInterface {
 
   public removeListener(observer: CallableFunction): void {
     this.observers = this.observers.filter(
-      obs => obs instanceof observer !== true,
+      (obs) => obs instanceof observer !== true,
     );
   }
 

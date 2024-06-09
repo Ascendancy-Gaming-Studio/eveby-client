@@ -7,7 +7,10 @@ export class Ready extends Event {
   }
 
   private async setActivity(): Promise<void> {
-    this.client?.user?.setActivity(this.config?.localStorage.get('prefix')?.getValue() + 'help', { type: ActivityType.Playing });
+    this.client?.user?.setActivity(
+      this.config?.localStorage.get('prefix')?.getValue() + 'help',
+      { type: ActivityType.Playing },
+    );
   }
 
   public async run(...args: any[]): Promise<void> {

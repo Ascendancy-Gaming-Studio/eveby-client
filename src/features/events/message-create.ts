@@ -7,7 +7,12 @@ export class MessageCreate extends Event {
   }
 
   public async run(client: ClientEvents, message: Message): Promise<void> {
-    if (!message.content.startsWith(this.config?.localStorage.get('prefix')?.getValue())) return
+    if (
+      !message.content.startsWith(
+        this.config?.localStorage.get('prefix')?.getValue(),
+      )
+    )
+      return;
 
     if (message.content.slice(1) === 'ping') {
       message.reply('pong');

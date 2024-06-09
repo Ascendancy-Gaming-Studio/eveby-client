@@ -38,7 +38,7 @@ export class EventManager implements EventManagerInterface {
   }
 
   public setAllowedEvents(allowedEvents: string[]) {
-    allowedEvents.forEach(event => {
+    allowedEvents.forEach((event) => {
       this.allowedEvents.push(this.convertEventNameToFileName(event));
     });
   }
@@ -54,7 +54,7 @@ export class EventManager implements EventManagerInterface {
     return fileName
       .toString()
       .replace('.js', '')
-      .replace(/-([a-z])/g, g => g[1].toUpperCase());
+      .replace(/-([a-z])/g, (g) => g[1].toUpperCase());
   }
 
   public convertFileNameToClassName(fileName: string) {
@@ -68,7 +68,7 @@ export class EventManager implements EventManagerInterface {
 
     this.localStorage.set('events', new Observable([]));
 
-    files.forEach(file => {
+    files.forEach((file) => {
       if (!this.allowedEvents.includes(file.toString().replace('.js', '')))
         return;
 
